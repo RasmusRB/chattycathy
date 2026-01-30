@@ -1,0 +1,159 @@
+# Default development docker-compose
+# For more control, use: docker compose -f docker-compose.base.yml -f docker-compose.dev.yml up
+
+services:
+  # Traefik Reverse Proxy
+  traefik:
+    image: traefik:v2.11
+    container_name: chattycathy-traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8081:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    networks:
+      - chattycathy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: chattycathy-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-chattycathy}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-chattycathy}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chattycathy-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: chattycathy-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chattycathy-network
+
+  # Database Migrations (runs once, then exits)
+  migrate:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: chattycathy-migrate
+    command: ["./migrate"]
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-chattycathy}
+      DB_SSLMODE: disable
+      LOG_LEVEL: info
+      LOG_PRETTY: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - chattycathy-network
+    restart: "no"
+
+  # Go API
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: chattycathy-api
+    environment:
+      PORT: 8080
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-chattycathy}
+      DB_SSLMODE: disable
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_DB: 0
+      LOG_LEVEL: debug
+      LOG_PRETTY: "true"
+    expose:
+      - "8080"
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - chattycathy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+      - "traefik.http.routers.api-local.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.api-local.entrypoints=web"
+
+  # Next.js App
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+        - NEXT_PUBLIC_GOOGLE_CLIENT_ID=48493344658-onh8n9ohnr1fu1pm6qksjii507ak7gb3.apps.googleusercontent.com
+    container_name: chattycathy-app
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: 48493344658-onh8n9ohnr1fu1pm6qksjii507ak7gb3.apps.googleusercontent.com
+    expose:
+      - "3000"
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      - api
+    networks:
+      - chattycathy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`chattycathy.localhost`)"
+      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  chattycathy-network:
+    driver: bridge

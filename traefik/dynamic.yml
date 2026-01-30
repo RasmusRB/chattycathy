@@ -1,0 +1,44 @@
+# Traefik dynamic configuration
+http:
+  middlewares:
+    # Strip /api prefix when forwarding to backend (optional - disable if API expects /api)
+    # api-stripprefix:
+    #   stripPrefix:
+    #     prefixes:
+    #       - "/api"
+
+    # Add security headers
+    secure-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+
+    # Rate limiting
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+
+    # CORS (adjust origins as needed)
+    cors:
+      headers:
+        accessControlAllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "DELETE"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "Content-Type"
+          - "Authorization"
+        accessControlAllowOriginList:
+          - "http://localhost:3000"
+          - "http://localhost:5173"
+          - "http://app.localhost"
+        accessControlMaxAge: 100
+        addVaryHeader: true
