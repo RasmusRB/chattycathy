@@ -1,0 +1,47 @@
+{
+  "common": {
+    "title": "ChattyCathy",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "clear": "Clear"
+  },
+  "navbar": {
+    "language": "Language",
+    "theme": {
+      "title": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signInWithGoogle": "Sign in with Google",
+    "loginDescription": "Sign in to access your account",
+    "signingIn": "Signing in...",
+    "logout": "Logout",
+    "termsNotice": "By signing in, you agree to our Terms of Service and Privacy Policy."
+  },
+  "ping": {
+    "title": "API Health Check",
+    "description": "Check if the API is responding",
+    "button": "Ping API",
+    "response": "Response",
+    "lastPing": "Last ping",
+    "history": "Ping History"
+  },
+  "counter": {
+    "title": "Counter",
+    "description": "A simple counter using Zustand state management",
+    "reset": "Reset"
+  },
+  "admin": {
+    "title": "Role & Permission Management",
+    "description": "Manage roles and their associated permissions",
+    "permissions": "permissions",
+    "systemRole": "System",
+    "unsavedChanges": "Unsaved",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel"
+  }
+}

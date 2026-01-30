@@ -1,0 +1,47 @@
+{
+  "common": {
+    "title": "ChattyCathy",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "clear": "Effacer"
+  },
+  "navbar": {
+    "language": "Langue",
+    "theme": {
+      "title": "Thème",
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
+    }
+  },
+  "auth": {
+    "signIn": "Se Connecter",
+    "signInWithGoogle": "Se connecter avec Google",
+    "loginDescription": "Connectez-vous pour accéder à votre compte",
+    "signingIn": "Connexion en cours...",
+    "logout": "Déconnexion",
+    "termsNotice": "En vous connectant, vous acceptez nos Conditions d'Utilisation et notre Politique de Confidentialité."
+  },
+  "ping": {
+    "title": "Vérification de l'API",
+    "description": "Vérifier si l'API répond",
+    "button": "Ping API",
+    "response": "Réponse",
+    "lastPing": "Dernier ping",
+    "history": "Historique des Pings"
+  },
+  "counter": {
+    "title": "Compteur",
+    "description": "Un compteur simple utilisant la gestion d'état Zustand",
+    "reset": "Réinitialiser"
+  },
+  "admin": {
+    "title": "Gestion des Rôles et Permissions",
+    "description": "Gérer les rôles et leurs permissions associées",
+    "permissions": "permissions",
+    "systemRole": "Système",
+    "unsavedChanges": "Non enregistré",
+    "saveChanges": "Enregistrer",
+    "cancel": "Annuler"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "common": {
+    "title": "ChattyCathy",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "clear": "Limpiar"
+  },
+  "navbar": {
+    "language": "Idioma",
+    "theme": {
+      "title": "Tema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    }
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "loginDescription": "Inicia sesión para acceder a tu cuenta",
+    "signingIn": "Iniciando sesión...",
+    "logout": "Cerrar Sesión",
+    "termsNotice": "Al iniciar sesión, aceptas nuestros Términos de Servicio y Política de Privacidad."
+  },
+  "ping": {
+    "title": "Verificación de API",
+    "description": "Verificar si la API está respondiendo",
+    "button": "Hacer Ping",
+    "response": "Respuesta",
+    "lastPing": "Último ping",
+    "history": "Historial de Pings"
+  },
+  "counter": {
+    "title": "Contador",
+    "description": "Un contador simple usando gestión de estado Zustand",
+    "reset": "Reiniciar"
+  },
+  "admin": {
+    "title": "Gestión de Roles y Permisos",
+    "description": "Gestionar roles y sus permisos asociados",
+    "permissions": "permisos",
+    "systemRole": "Sistema",
+    "unsavedChanges": "Sin guardar",
+    "saveChanges": "Guardar Cambios",
+    "cancel": "Cancelar"
+  }
+}
